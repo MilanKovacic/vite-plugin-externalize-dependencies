@@ -1,4 +1,6 @@
-# Vite Plugin Externalize Dependencies
+# Vite Plugin Externalize Dependencies [![npm](https://img.shields.io/npm/v/vite-plugin-externalize-dependencies.svg)](https://www.npmjs.com/package/vite-plugin-externalize-dependencies)
+
+
 
 A simplified plugin for Vite that allows you to exclude specific dependencies from the Vite bundle during development.
 
