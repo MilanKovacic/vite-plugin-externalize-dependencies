@@ -1,0 +1,38 @@
+{
+  "name": "vite-plugin-externalize",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "start:with-plugin": "cross-env DISABLE_PLUGIN=false vite dev --port 3001",
+    "start:without-plugin": "cross-env DISABLE_PLUGIN=true vite dev --port 3002",
+    "test:pluginApplied": "playwright test --reporter=list tests/pluginApplied.spec.ts",
+    "test:pluginDisabled": "playwright test --reporter=list tests/pluginDisabled.spec.ts",
+    "test:with-plugin": "start-server-and-test start:with-plugin http://localhost:3001 test:pluginApplied",
+    "test:without-plugin": "start-server-and-test start:without-plugin http://localhost:3002 test:pluginDisabled",
+    "test": "run-s test:with-plugin test:without-plugin"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.36.2",
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "start-server-and-test": "^2.0.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.5.0"
+  }
+}
