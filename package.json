@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-externalize",
+  "name": "vite-plugin-externalize-dependencies",
   "version": "0.3.0",
   "license": "MIT",
   "type": "module",
