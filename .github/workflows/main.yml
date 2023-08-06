@@ -70,7 +70,7 @@ jobs:
       id: changesets
       uses: changesets/action@v1
       with:
-        publish: npm run release # This is your custom release script
+        publish: npm run release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token used to create release pull request
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Token used to publish to npm
