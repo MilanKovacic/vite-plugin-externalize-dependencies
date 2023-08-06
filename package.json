@@ -4,8 +4,8 @@
   "license": "MIT",
   "description": "A simplified plugin for Vite that allows you to exclude specific dependencies from the Vite bundle during development.",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/MilanKovacic/vite-plugin-externalize-dependencies.git"
+    "type": "git",
+    "url": "https://github.com/MilanKovacic/vite-plugin-externalize-dependencies.git"
   },
   "author": "MilanKovacic",
   "bugs": {
@@ -47,6 +47,7 @@
     "test": "run-s test:with-plugin test:without-plugin"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "@playwright/test": "^1.36.2",
     "cross-env": "^7.0.3",
     "npm-run-all": "^4.1.5",
