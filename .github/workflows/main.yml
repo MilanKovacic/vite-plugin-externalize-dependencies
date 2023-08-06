@@ -1,34 +1,52 @@
 name: CI/CD Workflow
 
+# This workflow gets triggered on pull requests and pushes to the main branch
 on: 
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push: 
+    branches:
+      - main
+
+# Ensure that only one instance of the workflow runs at a time
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  build-and-publish:
+  build-and-test:
+    # This job runs on the latest version of Ubuntu
     runs-on: ubuntu-latest
 
     steps:
+    # This step checks out a copy of the repository
     - uses: actions/checkout@v2
 
+    # This step sets up Node.js on the runner
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 18
-        registry-url: 'https://registry.npmjs.org'
 
+    # This step installs all of the dependencies for the project
     - name: Install Dependencies
       run: npm ci
 
+    # This step installs the necessary browsers for Playwright test runner
     - name: Install Playwright Browsers
       run: npx playwright install
 
+    # This step runs the test script
     - name: Test
       run: npm test
 
-    - name: Build
-      run: npm run build
-
-    - name: Publish
-      run: npm publish
+    # This step handles versioning and creates a release pull request or publishes to npm
+    # It only gets run on pushes to the main branch
+    - name: Create Release Pull Request / Publish to npm
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      id: changesets
+      uses: changesets/action@v1
+      with:
+        publish: npm run release # This is your custom release script
       env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token used to create release pull request
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Token used to publish to npm

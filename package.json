@@ -38,13 +38,15 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "release": "npm run build && changeset publish",
     "start:with-plugin": "cross-env DISABLE_PLUGIN=false vite dev --port 3001",
     "start:without-plugin": "cross-env DISABLE_PLUGIN=true vite dev --port 3002",
     "test:pluginApplied": "playwright test --reporter=list tests/pluginApplied.spec.ts",
     "test:pluginDisabled": "playwright test --reporter=list tests/pluginDisabled.spec.ts",
     "test:with-plugin": "start-server-and-test start:with-plugin http://localhost:3001 test:pluginApplied",
     "test:without-plugin": "start-server-and-test start:without-plugin http://localhost:3002 test:pluginDisabled",
-    "test": "run-s test:with-plugin test:without-plugin"
+    "test": "run-s test:with-plugin test:without-plugin",
+    "changeset": "changeset"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
