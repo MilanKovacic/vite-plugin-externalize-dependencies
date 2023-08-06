@@ -39,10 +39,34 @@ jobs:
     - name: Test
       run: npm test
 
+  release:
+    # This job also runs on the latest version of Ubuntu
+    runs-on: ubuntu-latest
+    # This job needs the build-and-test job to complete successfully before it can start
+    needs: build-and-test
+    # This job only runs on pushes to the main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # These permissions are needed for creating release pull requests and pushing to npm
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    # This step checks out a copy of the repository
+    - uses: actions/checkout@v2
+
+    # This step sets up Node.js on the runner
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    # This step installs all of the dependencies for the project
+    - name: Install Dependencies
+      run: npm ci
+
     # This step handles versioning and creates a release pull request or publishes to npm
-    # It only gets run on pushes to the main branch
     - name: Create Release Pull Request / Publish to npm
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: changesets
       uses: changesets/action@v1
       with:
