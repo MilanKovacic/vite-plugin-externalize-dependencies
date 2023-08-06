@@ -6,7 +6,7 @@ import { Plugin, ResolvedConfig, UserConfig } from "vite";
  *
  * @param {Object} options - Includes a list of modules to externalize
  * @param {string[]} options.externals - The list of modules to externalize
- * 
+ *
  * @returns {Object} The esbuild plugin
  */
 const esbuildPluginExternalize = ({ externals }: { externals: string[] }) => {
@@ -39,7 +39,7 @@ const esbuildPluginExternalize = ({ externals }: { externals: string[] }) => {
  * Creates a RegExp filter for the provided external modules
  *
  * @param {string[]} externals - The list of external modules
- * 
+ *
  * @returns {RegExp} A RegExp that matches any of the external modules
  */
 const makeFilter = (externals: string[]) => {
@@ -53,7 +53,7 @@ const makeFilter = (externals: string[]) => {
  * If module is externalized, Vite will prefix imports with "/@id/" during development
  *
  * @param {string[]} externals - The list of external modules
- * 
+ *
  * @returns {Object} Vite plugin to remove prefix from imports
  */
 const modulePrefixTransform = (externals: string[]) => {
@@ -85,14 +85,14 @@ interface PluginOptions {
  * Creates a Vite plugin to externalize specific modules
  * This plugin is only used during development
  * To externalize modules in production, configure build.rollupOptions.external
- * 
+ *
  * @param {string[]} externals - The list of modules to externalize.
- * 
+ *
  * @returns {Plugin} The Vite plugin.
  */
 const vitePluginExternalize = (options: PluginOptions): Plugin => {
   const { externals } = options;
-  
+
   return {
     name: "vite-plugin-externalize",
     enforce: "pre",

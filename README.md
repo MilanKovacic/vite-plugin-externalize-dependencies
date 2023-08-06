@@ -1,7 +1,5 @@
 # Vite Plugin Externalize Dependencies [![npm](https://img.shields.io/npm/v/vite-plugin-externalize-dependencies.svg)](https://www.npmjs.com/package/vite-plugin-externalize-dependencies)
 
-
-
 A simplified plugin for Vite that allows you to exclude specific dependencies from the Vite bundle during development.
 
 ## Table of Contents
@@ -23,19 +21,20 @@ To install the plugin, use npm:
 ## Usage
 
 After installing the plugin, import it, and add it to Vite configuration:
-```javascript
-import { defineConfig } from 'vite'; 
-import externalize from 'vite-plugin-externalize-dependencies';
 
-export default defineConfig({ 
-    plugins: [ 
-        externalize({ externals: ["externalized-dependency"], }), 
-    ], 
-}); 
+```javascript
+import { defineConfig } from "vite";
+import externalize from "vite-plugin-externalize-dependencies";
+
+export default defineConfig({
+  plugins: [externalize({ externals: ["externalized-dependency"] })],
+});
 ```
+
 ## Requirements
 
 The plugin is intended to be consumed by Vite.
+
 ## Contributing and Development
 
 Contributions are welcome! If you wish to contribute, you can use the following npm commands to help facilitate your development process:
@@ -44,10 +43,11 @@ Contributions are welcome! If you wish to contribute, you can use the following 
 - **build**: Build the plugin.
 - **test**: Run tests to verify expected outputs.
 
-Use them as follows: 
+Use them as follows:
+
 ```
-npm run dev 
-npm run build 
+npm run dev
+npm run build
 npm run test
 ```
 
