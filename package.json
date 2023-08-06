@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-externalize-dependencies",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "description": "A simplified plugin for Vite that allows you to exclude specific dependencies from the Vite bundle during development.",
   "repository": {
