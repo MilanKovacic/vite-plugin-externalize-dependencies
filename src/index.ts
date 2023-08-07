@@ -1,4 +1,22 @@
 import { Plugin, ResolvedConfig, UserConfig } from "vite";
+import { Plugin as EsbuildPlugin, PluginBuild, OnResolveArgs } from "esbuild";
+
+/**
+ * Creates a RegExp filter for the provided external modules
+ *
+ * @param {string[]} externals - The list of external modules
+ *
+ * @returns {RegExp} A RegExp that matches any of the external modules
+ */
+const makeFilter = (externals: string[]): RegExp => {
+  const externalPatterns = externals.join("|");
+  const regex = new RegExp(`^(${externalPatterns})(\\/.*)?$`);
+  return regex;
+};
+
+interface PluginOptions {
+  externals: string[];
+}
 
 /**
  * Creates a plugin for esbuild to externalize specific modules
@@ -9,43 +27,25 @@ import { Plugin, ResolvedConfig, UserConfig } from "vite";
  *
  * @returns {Object} The esbuild plugin
  */
-const esbuildPluginExternalize = ({ externals }: { externals: string[] }) => {
+
+const esbuildPluginExternalize = ({
+  externals,
+}: PluginOptions): EsbuildPlugin => {
   const externalFilter = makeFilter(externals);
 
   return {
     name: "externalize",
-    setup(build: any) {
-      // Supresses the following error:
-      // The entry point [moduleName] cannot be marked as external
-      build.onResolve({ filter: externalFilter }, (args: any) => {
-        return {
-          path: args.path,
-          namespace: "externalize",
-        };
-      });
+    setup(build: PluginBuild) {
+      build.onResolve({ filter: externalFilter }, (args: OnResolveArgs) => ({
+        path: args.path,
+        namespace: "externalize",
+      }));
 
-      // Supresses the following error:
-      // Do not know how to load path: [namespace:moduleName]
-      build.onLoad({ filter: externalFilter }, () => {
-        return {
-          contents: "",
-        };
-      });
+      build.onLoad({ filter: externalFilter }, () => ({
+        contents: "",
+      }));
     },
   };
-};
-
-/**
- * Creates a RegExp filter for the provided external modules
- *
- * @param {string[]} externals - The list of external modules
- *
- * @returns {RegExp} A RegExp that matches any of the external modules
- */
-const makeFilter = (externals: string[]) => {
-  const externalPatterns = externals.join("|");
-  const regex = new RegExp(`^(${externalPatterns})(\\/.*)?$`);
-  return regex;
 };
 
 /**
@@ -65,7 +65,7 @@ const modulePrefixTransform = (externals: string[]) => {
 
   return {
     name: "vite-plugin-remove-prefix",
-    transform: (code: string) => {
+    transform: (code: string): string => {
       if (prefixedImportRegex.test(code)) {
         return code.replace(
           prefixedImportRegex,
@@ -76,10 +76,6 @@ const modulePrefixTransform = (externals: string[]) => {
     },
   };
 };
-
-interface PluginOptions {
-  externals: string[];
-}
 
 /**
  * Creates a Vite plugin to externalize specific modules
@@ -97,38 +93,50 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
     name: "vite-plugin-externalize",
     enforce: "pre",
     apply: "serve",
-    config: (config: UserConfig) => {
-      if (config && config.optimizeDeps && config.optimizeDeps.esbuildOptions) {
-        config.optimizeDeps.esbuildOptions.plugins ??= [];
+    config: (config: UserConfig): UserConfig | undefined => {
+      const modifiedConfiguration = { ...config };
+      if (
+        modifiedConfiguration.optimizeDeps &&
+        modifiedConfiguration.optimizeDeps.esbuildOptions
+      ) {
+        modifiedConfiguration.optimizeDeps.esbuildOptions.plugins ??= [];
 
-        config.optimizeDeps.esbuildOptions.plugins.push(
-          esbuildPluginExternalize({ externals: externals }),
+        modifiedConfiguration.optimizeDeps.esbuildOptions.plugins.push(
+          esbuildPluginExternalize({ externals }),
         );
       }
+      return modifiedConfiguration;
     },
     configResolved: (resolvedConfig: ResolvedConfig) => {
       const modulePrefixTransformPlugin = modulePrefixTransform(externals);
       // Plugins are read-only, and should not be modified,
       // however modulePrefixTransformPlugin MUST run after vite:import-analysis (which adds the prefix to imports)
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       resolvedConfig.plugins.push(modulePrefixTransformPlugin);
     },
     resolveId: (id: string) => {
       if (externals.includes(id)) {
         return { id, external: true };
       }
+
+      // eslint-disable-next-line unicorn/no-null
+      return null;
     },
-    // Supresses the following warning:
-    // The following dependencies are imported but could not be resolved:
-    // [dependency] (imported by [sourceFile])
     load: (id: string) => {
       if (externals.includes(id)) {
         // Vite will try to resolve the modules even when externalized
-        // In order to supress the warning, a stub module is returned
+        // In order to suppress the warning, a stub module is returned
         return "export default {};";
       }
+
+      // eslint-disable-next-line unicorn/no-null
+      return null;
     },
   };
 };
 
+// eslint-disable-next-line import/no-default-export
 export default vitePluginExternalize;

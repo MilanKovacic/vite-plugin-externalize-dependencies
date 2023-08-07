@@ -6,15 +6,15 @@
     <script type="importmap">
       {
         "imports": {
-          "customLogger": "./src/customLogger.ts"
+          "custom-logger": "./src/custom-logger.ts"
         }
       }
     </script>
   </head>
   <body>
     <script type="module">
-      import log from "customLogger";
-      log("Message from logger.");
+      import { logMessage } from "custom-logger";
+      logMessage("Message from logger.");
     </script>
   </body>
 </html>

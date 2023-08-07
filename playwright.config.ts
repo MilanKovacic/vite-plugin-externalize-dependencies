@@ -9,6 +9,8 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+// eslint-disable-next-line import/no-default-export
 export default defineConfig({
   testDir: "./tests",
   /* Run tests in files in parallel */

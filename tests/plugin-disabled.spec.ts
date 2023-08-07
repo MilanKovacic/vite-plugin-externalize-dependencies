@@ -6,6 +6,6 @@ test("should fail when plugin is disabled", async ({ page }) => {
     page.getByText("Message from logger.", { exact: true }),
   ).not.toBeVisible();
   await expect(
-    page.getByText('Failed to resolve import "customLogger"'),
+    page.getByText('Failed to resolve import "custom-logger"'),
   ).toBeVisible();
 });
