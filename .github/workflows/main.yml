@@ -31,6 +31,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # This step verifies code with ESLint
+      - name: Run ESLint
+        run: npm run lint:check
+
+      # This step verifies code formatting with Prettier
+      - name: Run Prettier
+        run: npm run prettier:check
+
       # This step installs the necessary browsers for Playwright test runner
       - name: Install Playwright Browsers
         run: npx playwright install
