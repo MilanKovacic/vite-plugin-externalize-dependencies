@@ -2,6 +2,13 @@
 
 A simplified plugin for Vite that allows you to exclude specific dependencies from the Vite bundle during development.
 
+The following errors/warnings are supressed:
+
+- The entry point [moduleName] cannot be marked as external
+- Do not know how to load path: [namespace:moduleName]
+- Failed to resolve import [dependency] from [sourceFile]. Does the file exist?
+- The following dependencies are imported but could not be resolved: [dependency] (imported by [sourceFile])
+
 ## Table of Contents
 
 - [Installation](#installation)
