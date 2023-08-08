@@ -36,11 +36,14 @@ const esbuildPluginExternalize = ({
   return {
     name: "externalize",
     setup(build: PluginBuild) {
+      // Supresses the following error:
+      // The entry point [moduleName] cannot be marked as external
       build.onResolve({ filter: externalFilter }, (args: OnResolveArgs) => ({
         path: args.path,
         namespace: "externalize",
       }));
-
+      // Supresses the following error:
+      // Do not know how to load path: [namespace:moduleName]
       build.onLoad({ filter: externalFilter }, () => ({
         contents: "",
       }));
@@ -117,14 +120,18 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       resolvedConfig.plugins.push(modulePrefixTransformPlugin);
     },
+    // Supresses the following warning:
+    // Failed to resolve import [dependency] from [sourceFile]. Does the file exist?
     resolveId: (id: string) => {
       if (externals.includes(id)) {
         return { id, external: true };
       }
-
       // eslint-disable-next-line unicorn/no-null
       return null;
     },
+    // Supresses the following warning:
+    // The following dependencies are imported but could not be resolved:
+    // [dependency] (imported by [sourceFile])
     load: (id: string) => {
       if (externals.includes(id)) {
         // Vite will try to resolve the modules even when externalized
