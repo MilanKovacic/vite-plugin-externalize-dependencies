@@ -48,7 +48,7 @@ jobs:
         run: npm test
 
       - name: Build
-        run: npm build
+        run: npm run build
 
   release:
     # This job also runs on the latest version of Ubuntu
