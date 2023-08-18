@@ -10,6 +10,7 @@ export default defineConfig({
     ? []
     : [externalize({ externals: ["custom-logger"] }), dts()],
   build: {
+    sourcemap: true,
     lib: {
       entry: new URL("src/index.ts", import.meta.url).pathname,
       formats: ["es", "cjs"],
