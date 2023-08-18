@@ -4,9 +4,9 @@ import { Plugin as EsbuildPlugin, PluginBuild, OnResolveArgs } from "esbuild";
 /**
  * Creates a RegExp filter for the provided external modules
  *
- * @param {string[]} externals - The list of external modules
+ * @param externals - The list of external modules
  *
- * @returns {RegExp} A RegExp that matches any of the external modules
+ * @returns A RegExp that matches any of the external modules
  */
 const makeFilter = (externals: string[]): RegExp => {
   const externalPatterns = externals.join("|");
@@ -22,10 +22,9 @@ interface PluginOptions {
  * Creates a plugin for esbuild to externalize specific modules
  * esbuild is used by Vite during development
  *
- * @param {Object} options - Includes a list of modules to externalize
- * @param {string[]} options.externals - The list of modules to externalize
+ * @param options - Plugin options
  *
- * @returns {Object} The esbuild plugin
+ * @returns The esbuild plugin
  */
 
 const esbuildPluginExternalize = ({
@@ -53,11 +52,11 @@ const esbuildPluginExternalize = ({
 
 /**
  * Creates a plugin to remove prefix from imports injected by Vite
- * If module is externalized, Vite will prefix imports with "/@id/" during development
+ * If module is externalized, Vite will prefix imports with "/\@id/" during development
  *
- * @param {string[]} externals - The list of external modules
+ * @param externals - The list of external modules
  *
- * @returns {Object} Vite plugin to remove prefix from imports
+ * @returns Vite plugin to remove prefix from imports
  */
 const modulePrefixTransform = (externals: string[]) => {
   const viteImportAnalysisModulePrefix = "/@id/";
@@ -85,9 +84,9 @@ const modulePrefixTransform = (externals: string[]) => {
  * This plugin is only used during development
  * To externalize modules in production, configure build.rollupOptions.external
  *
- * @param {string[]} externals - The list of modules to externalize.
+ * @param externals - The list of modules to externalize.
  *
- * @returns {Plugin} The Vite plugin.
+ * @returns The Vite plugin.
  */
 const vitePluginExternalize = (options: PluginOptions): Plugin => {
   const { externals } = options;
@@ -145,5 +144,6 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
   };
 };
 
+// Justification: Vite plugins are expected to provide a default export
 // eslint-disable-next-line import/no-default-export
 export default vitePluginExternalize;
