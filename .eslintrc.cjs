@@ -1,7 +1,13 @@
 // SOURCE: https://github.com/iamturns/create-exposed-app/blob/master/.eslintrc.js
 
 module.exports = {
-  plugins: ["@typescript-eslint", "eslint-comments", "promise", "unicorn"],
+  plugins: [
+    "@typescript-eslint",
+    "eslint-comments",
+    "eslint-plugin-tsdoc",
+    "promise",
+    "unicorn",
+  ],
   extends: [
     "airbnb-base",
     "airbnb-typescript/base",
@@ -48,6 +54,7 @@ module.exports = {
     "unicorn/no-array-for-each": "off",
     // It's not accurate in the monorepo style
     "import/no-extraneous-dependencies": "off",
+    "tsdoc/syntax": "error",
   },
   overrides: [
     {
