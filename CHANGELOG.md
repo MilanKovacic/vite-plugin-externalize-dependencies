@@ -1,5 +1,12 @@
 # vite-plugin-externalize-dependencies
 
+## 0.8.0
+
+### Minor Changes
+
+- 05dabfc: Fix issue with published typescript definitions not being combined in a single file
+- bcbf210: Add a sourcemap
+
 ## 0.7.0
 
 ### Minor Changes
