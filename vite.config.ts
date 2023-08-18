@@ -14,6 +14,7 @@ export default defineConfig({
         dts({ rollupTypes: true }),
       ],
   build: {
+    sourcemap: true,
     lib: {
       // eslint-disable-next-line unicorn/prefer-module
       entry: resolve(__dirname, "src/index.ts"),
