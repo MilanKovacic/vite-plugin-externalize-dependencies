@@ -8,11 +8,10 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "emitDeclarationOnly": true,
-    "declaration": true,
+    "emitDeclarationOnly": false,
+
     "outDir": "dist",
 
     /* Linting */
