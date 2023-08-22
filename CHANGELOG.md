@@ -1,5 +1,11 @@
 # vite-plugin-externalize-dependencies
 
+## 0.9.0
+
+### Minor Changes
+
+- 647dd32: Fix issue with externals still being included in optimizedeps.include
+
 ## 0.8.0
 
 ### Minor Changes
