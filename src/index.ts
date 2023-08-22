@@ -110,6 +110,18 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
       return modifiedConfiguration;
     },
     configResolved: (resolvedConfig: ResolvedConfig) => {
+      /**
+       * All externals are removed from optimizeDeps.include (automatically inserted by Vite)
+       */
+      if (resolvedConfig.optimizeDeps && resolvedConfig.optimizeDeps.include) {
+        const includedDependencies = resolvedConfig.optimizeDeps.include;
+        const filteredDependencies = includedDependencies.filter(
+          (element) => !externals.includes(element),
+        );
+        // eslint-disable-next-line no-param-reassign
+        resolvedConfig.optimizeDeps.include = filteredDependencies;
+      }
+
       const modulePrefixTransformPlugin = modulePrefixTransform(externals);
       // Plugins are read-only, and should not be modified,
       // however modulePrefixTransformPlugin MUST run after vite:import-analysis (which adds the prefix to imports)
