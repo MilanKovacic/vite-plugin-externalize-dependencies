@@ -113,9 +113,11 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
       /**
        * All externals are removed from optimizeDeps.include (automatically inserted by Vite)
        */
-      if(resolvedConfig.optimizeDeps && resolvedConfig.optimizeDeps.include) {
+      if (resolvedConfig.optimizeDeps && resolvedConfig.optimizeDeps.include) {
         const includedDependencies = resolvedConfig.optimizeDeps.include;
-        const filteredDependencies = includedDependencies.filter((element) => !externals.includes(element));
+        const filteredDependencies = includedDependencies.filter(
+          (element) => !externals.includes(element),
+        );
         resolvedConfig.optimizeDeps.include = filteredDependencies;
       }
 
