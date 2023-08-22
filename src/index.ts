@@ -118,6 +118,7 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => {
         const filteredDependencies = includedDependencies.filter(
           (element) => !externals.includes(element),
         );
+        // eslint-disable-next-line no-param-reassign
         resolvedConfig.optimizeDeps.include = filteredDependencies;
       }
 
