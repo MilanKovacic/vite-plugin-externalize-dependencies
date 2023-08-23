@@ -1,5 +1,11 @@
 # vite-plugin-externalize-dependencies
 
+## 0.10.0
+
+### Minor Changes
+
+- 442a94f: Fix issue with external dependencies not being included in optimizeDeps.exclude
+
 ## 0.9.0
 
 ### Minor Changes
