@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: disablePlugin
     ? []
     : [
-        externalize({ externals: ["custom-logger"] }),
+        externalize({ externals: ["custom-logger", "react"] }),
         dts({ rollupTypes: true }),
       ],
   build: {
