@@ -47,7 +47,7 @@ const esbuildPluginExternalize = (
     build.onResolve({ filter: /.*/ }, (args: OnResolveArgs) => {
       if (isExternal(args.path, externals)) {
         resolvedExternals.add(args.path);
-        return { path: args.path, external: true };
+        return { path: args.path, namespace: "externalized-modules" };
       }
 
       return null;
