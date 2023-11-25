@@ -34,9 +34,20 @@ import { defineConfig } from "vite";
 import externalize from "vite-plugin-externalize-dependencies";
 
 export default defineConfig({
-  plugins: [externalize({ externals: ["externalized-dependency"] })],
+  plugins: [
+    externalize({
+      externals: [
+        "react", // Externalize "react", and all of its subexports (react/*), such as react/jsx-runtime
+        /^external-.*/, // Externalize all modules starting with "external-"
+        (moduleName) => moduleName.includes("external"), // Externalize all modules containing "external",
+      ],
+    }),
+  ],
 });
 ```
+
+Modules can be externalized by **name (exact match)**, by **regex**, or by a **custom function** (returning _true_ to externalize the module).
+The plugin will automatically externalize all subexports of a module, such as react/jsx-runtime.
 
 ## Requirements
 
