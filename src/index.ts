@@ -72,27 +72,25 @@ const esbuildPluginExternalize = (
  *
  * @returns Vite plugin to remove prefix from imports
  */
-const modulePrefixTransform = (): Plugin => {
-  const viteImportAnalysisModulePrefix = "/@id/";
-  const prefixedImportRegex = new RegExp(
-    `${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join("|")})`,
-    "g",
-  );
+const modulePrefixTransform = (): Plugin => ({
+  name: "vite-plugin-remove-prefix",
+  transform: (code: string): string => {
+    const viteImportAnalysisModulePrefix = "/@id/";
+    const prefixedImportRegex = new RegExp(
+      `${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join("|")})`,
+      "g",
+    );
 
-  return {
-    name: "vite-plugin-remove-prefix",
-    transform: (code: string): string => {
-      if (prefixedImportRegex.test(code)) {
-        // eslint-disable-next-line unicorn/prefer-string-replace-all
-        return code.replace(
-          prefixedImportRegex,
-          (_: string, externalName: string) => externalName,
-        );
-      }
-      return code;
-    },
-  };
-};
+    if (prefixedImportRegex.test(code)) {
+      // eslint-disable-next-line unicorn/prefer-string-replace-all
+      return code.replace(
+        prefixedImportRegex,
+        (_: string, externalName: string) => externalName,
+      );
+    }
+    return code;
+  },
+});
 
 /**
  * Creates a Vite plugin to externalize specific modules.
