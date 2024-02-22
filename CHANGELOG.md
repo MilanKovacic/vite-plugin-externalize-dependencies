@@ -1,5 +1,11 @@
 # vite-plugin-externalize-dependencies
 
+## 0.12.0
+
+### Minor Changes
+
+- 8563878: Fix issue with plugin incorrectly handling non-externalized virtual modules
+
 ## 0.11.0
 
 ### Minor Changes
