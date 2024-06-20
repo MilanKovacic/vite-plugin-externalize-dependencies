@@ -1,5 +1,11 @@
 # vite-plugin-externalize-dependencies
 
+## 0.13.0
+
+### Minor Changes
+
+- ff30c3b: Fix the case when no externals are matched
+
 ## 0.12.0
 
 ### Minor Changes
