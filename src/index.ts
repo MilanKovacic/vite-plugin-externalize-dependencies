@@ -75,6 +75,9 @@ const esbuildPluginExternalize = (
 const modulePrefixTransform = (): Plugin => ({
   name: "vite-plugin-remove-prefix",
   transform: (code: string): string => {
+    // Verify if there are any external modules resolved to avoid having /\/@id\/()/g regex
+    if (resolvedExternals.size === 0) return code;
+
     const viteImportAnalysisModulePrefix = "/@id/";
     const prefixedImportRegex = new RegExp(
       `${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join("|")})`,
