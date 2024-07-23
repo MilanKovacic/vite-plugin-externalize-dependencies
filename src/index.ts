@@ -68,7 +68,7 @@ const esbuildPluginExternalize = (
  * Creates a plugin to remove prefix from imports injected by Vite.
  * If module is externalized, Vite will prefix imports with "/\@id/" during development.
  *
- * @param externals - The list of external modules
+ * @param config.base - The base path of the vite configuration
  *
  * @returns Vite plugin to remove prefix from imports
  */
