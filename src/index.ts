@@ -5,6 +5,11 @@ import { Plugin as EsbuildPlugin, PluginBuild, OnResolveArgs } from "esbuild";
 
 type ExternalCriteria = string | RegExp | ((id: string) => boolean);
 
+interface ModulePrefixTransformPluginOptions {
+  /** The base path of the vite configuration */
+  base: string;
+}
+
 interface PluginOptions {
   externals: ExternalCriteria[];
 }
@@ -68,11 +73,13 @@ const esbuildPluginExternalize = (
  * Creates a plugin to remove prefix from imports injected by Vite.
  * If module is externalized, Vite will prefix imports with "/\@id/" during development.
  *
- * @param config.base - The base path of the vite configuration
+ * @param options - The plugin options
  *
  * @returns Vite plugin to remove prefix from imports
  */
-const modulePrefixTransform = ({ base }: { base: string }): Plugin => ({
+const modulePrefixTransform = ({
+  base,
+}: ModulePrefixTransformPluginOptions): Plugin => ({
   name: "vite-plugin-remove-prefix",
   transform: (code: string): string => {
     // Verify if there are any external modules resolved to avoid having /\/@id\/()/g regex
