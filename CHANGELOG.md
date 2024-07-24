@@ -1,5 +1,15 @@
 # vite-plugin-externalize-dependencies
 
+## 1.0.0
+
+### Major Changes
+
+- 5725b75: Account for vite's base path config
+
+### Patch Changes
+
+- ccf6e51: Externalize dependencies inside node_modules
+
 ## 0.13.0
 
 ### Minor Changes
