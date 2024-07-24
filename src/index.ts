@@ -87,7 +87,9 @@ const modulePrefixTransform = ({
 
     const viteImportAnalysisModulePrefix = "@id/";
     const prefixedImportRegex = new RegExp(
-      `${base}${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join("|")})`,
+      `${base}${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join(
+        "|",
+      )})`,
       "g",
     );
 
