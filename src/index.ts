@@ -47,10 +47,21 @@ const esbuildPluginExternalize = (
 ): EsbuildPlugin => ({
   name: "externalize",
   setup(build: PluginBuild) {
-    // Supresses the following error:
-    // The entry point [moduleName] cannot be marked as external
     build.onResolve({ filter: /.*/ }, (args: OnResolveArgs) => {
-      if (isExternal(args.path, externals)) {
+      if (
+        isExternal(args.path, externals) &&
+        args.kind === "import-statement"
+      ) {
+        resolvedExternals.add(args.path);
+        return {
+          path: args.path,
+          external: true,
+        };
+      }
+
+      // Supresses the following error:
+      // The entry point [moduleName] cannot be marked as external
+      if (isExternal(args.path, externals) && args.kind === "entry-point") {
         resolvedExternals.add(args.path);
         return { path: args.path, namespace: "externalized-modules" };
       }
