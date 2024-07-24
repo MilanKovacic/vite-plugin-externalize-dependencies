@@ -128,27 +128,23 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => ({
   name: "vite-plugin-externalize",
   enforce: "pre",
   apply: "serve",
-  config: (config: UserConfig): UserConfig | undefined => {
-    const modifiedConfiguration = { ...config };
-
-    modifiedConfiguration.optimizeDeps ??= {};
-    modifiedConfiguration.optimizeDeps.esbuildOptions ??= {};
-    modifiedConfiguration.optimizeDeps.esbuildOptions.plugins ??= [];
+  config: (config: UserConfig): Omit<UserConfig, "plugins"> | null | void => {
+    config.optimizeDeps ??= {}; // eslint-disable-line no-param-reassign
+    config.optimizeDeps.esbuildOptions ??= {}; // eslint-disable-line no-param-reassign
+    config.optimizeDeps.esbuildOptions.plugins ??= []; // eslint-disable-line no-param-reassign
 
     // Prevent the plugin from being inserted multiple times
     const pluginName = "externalize";
-    const isPluginAdded =
-      modifiedConfiguration.optimizeDeps.esbuildOptions.plugins.some(
-        (plugin) => plugin.name === pluginName,
-      );
+    const isPluginAdded = config.optimizeDeps.esbuildOptions.plugins.some(
+      (plugin: EsbuildPlugin) => plugin.name === pluginName,
+    );
 
     if (!isPluginAdded) {
-      modifiedConfiguration.optimizeDeps.esbuildOptions.plugins.push(
+      config.optimizeDeps.esbuildOptions.plugins.push(
         esbuildPluginExternalize(options.externals),
       );
     }
-
-    return modifiedConfiguration;
+    return null;
   },
   configResolved: (resolvedConfig: ResolvedConfig) => {
     // Plugins are read-only, and should not be modified,
