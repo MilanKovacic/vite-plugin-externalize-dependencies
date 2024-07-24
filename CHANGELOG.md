@@ -1,5 +1,11 @@
 # vite-plugin-externalize-dependencies
 
+## 1.0.1
+
+### Patch Changes
+
+- c7cc8a6: fix duplicated esbuild plugins issue
+
 ## 1.0.0
 
 ### Major Changes
