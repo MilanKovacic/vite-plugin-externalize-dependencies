@@ -5,6 +5,11 @@ import { Plugin as EsbuildPlugin, PluginBuild, OnResolveArgs } from "esbuild";
 
 type ExternalCriteria = string | RegExp | ((id: string) => boolean);
 
+interface ModulePrefixTransformPluginOptions {
+  /** The base path of the vite configuration */
+  base: string;
+}
+
 interface PluginOptions {
   externals: ExternalCriteria[];
 }
@@ -68,19 +73,23 @@ const esbuildPluginExternalize = (
  * Creates a plugin to remove prefix from imports injected by Vite.
  * If module is externalized, Vite will prefix imports with "/\@id/" during development.
  *
- * @param externals - The list of external modules
+ * @param options - The plugin options
  *
  * @returns Vite plugin to remove prefix from imports
  */
-const modulePrefixTransform = (): Plugin => ({
+const modulePrefixTransform = ({
+  base,
+}: ModulePrefixTransformPluginOptions): Plugin => ({
   name: "vite-plugin-remove-prefix",
   transform: (code: string): string => {
     // Verify if there are any external modules resolved to avoid having /\/@id\/()/g regex
     if (resolvedExternals.size === 0) return code;
 
-    const viteImportAnalysisModulePrefix = "/@id/";
+    const viteImportAnalysisModulePrefix = "@id/";
     const prefixedImportRegex = new RegExp(
-      `${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join("|")})`,
+      `${base}${viteImportAnalysisModulePrefix}(${[...resolvedExternals].join(
+        "|",
+      )})`,
       "g",
     );
 
@@ -137,7 +146,9 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => ({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    resolvedConfig.plugins.push(modulePrefixTransform());
+    resolvedConfig.plugins.push(
+      modulePrefixTransform({ base: resolvedConfig.base ?? "/" }),
+    );
   },
   // Supresses the following warning:
   // Failed to resolve import [dependency] from [sourceFile]. Does the file exist?
