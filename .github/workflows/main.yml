@@ -25,7 +25,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: 22
 
       # This step installs all of the dependencies for the project
       - name: Install Dependencies
@@ -70,7 +70,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: 22
 
       # This step installs all of the dependencies for the project
       - name: Install Dependencies

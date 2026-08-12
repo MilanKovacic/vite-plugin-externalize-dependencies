@@ -51,7 +51,7 @@ The plugin will automatically externalize all subexports of a module, such as re
 
 ## Requirements
 
-The plugin is intended to be consumed by Vite.
+Requires **Vite 8+** (Rolldown-based dependency optimization).
 
 ## Contributing and Development
 
@@ -73,7 +73,7 @@ Please feel free to open a pull request with your changes or improvements.
 
 ## Known Issues & limitations
 
-This plugin is designed to work during development. For production, users should manually configure build.rollupOptions.external in Vite.
+This plugin is designed to work during development. For production, users should manually configure `build.rolldownOptions.external` in Vite (or `build.rollupOptions.external`, which Vite still accepts for compatibility).
 
 ## Support
 

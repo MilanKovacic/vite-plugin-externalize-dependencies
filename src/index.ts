@@ -1,7 +1,6 @@
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable unicorn/no-null */
 import { Plugin, ResolvedConfig, UserConfig } from "vite";
-import { Plugin as EsbuildPlugin, PluginBuild, OnResolveArgs } from "esbuild";
 
 type ExternalCriteria = string | RegExp | ((id: string) => boolean);
 
@@ -34,49 +33,30 @@ const isExternal = (id: string, externals: ExternalCriteria[]): boolean =>
   });
 
 /**
- * Creates a plugin for esbuild to externalize specific modules.
- * esbuild is used by Vite during development.
- * This plugin is injected into optimizeDeps.esbuildOptions.plugins, and runs during the dependency scanning / optimization phase.
+ * Creates a plugin for Rolldown (used by Vite during optimizeDeps) to externalize
+ * specific modules during the dependency scanning / optimization phase.
  *
- * @param options - Plugin options
+ * @param externals - The list of modules to externalize.
  *
- * @returns The esbuild plugin
+ * @returns The Rolldown/Vite plugin
  */
-const esbuildPluginExternalize = (
-  externals: ExternalCriteria[],
-): EsbuildPlugin => ({
+const optimizeDepsExternalizePlugin = (externals: ExternalCriteria[]) => ({
   name: "externalize",
-  setup(build: PluginBuild) {
-    build.onResolve({ filter: /.*/ }, (args: OnResolveArgs) => {
-      if (
-        isExternal(args.path, externals) &&
-        args.kind === "import-statement"
-      ) {
-        resolvedExternals.add(args.path);
-        return {
-          path: args.path,
-          external: true,
-        };
-      }
-
-      // Supresses the following error:
-      // The entry point [moduleName] cannot be marked as external
-      if (isExternal(args.path, externals) && args.kind === "entry-point") {
-        resolvedExternals.add(args.path);
-        return { path: args.path, namespace: "externalized-modules" };
-      }
-
+  resolveId(id: string) {
+    if (!isExternal(id, externals)) {
       return null;
-    });
-    // Supresses the following error:
-    // Do not know how to load path: [namespace:moduleName]
-    build.onLoad({ filter: /.*/ }, (args) => {
-      if (isExternal(args.path, externals)) {
-        return { contents: "" };
-      }
+    }
 
+    resolvedExternals.add(id);
+    return { id, external: true };
+  },
+  load(id: string) {
+    if (!isExternal(id, externals)) {
       return null;
-    });
+    }
+
+    // Suppresses: Do not know how to load path: [moduleName]
+    return "";
   },
 });
 
@@ -118,9 +98,10 @@ const modulePrefixTransform = ({
 /**
  * Creates a Vite plugin to externalize specific modules.
  * This plugin is only used during development.
- * To externalize modules in production, configure build.rollupOptions.external.
+ * To externalize modules in production, configure `build.rolldownOptions.external`
+ * (or `build.rollupOptions.external`) in Vite.
  *
- * @param externals - The list of modules to externalize.
+ * @param options - Plugin options including the list of modules to externalize.
  *
  * @returns The Vite plugin.
  */
@@ -130,20 +111,31 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => ({
   apply: "serve",
   config: (config: UserConfig): Omit<UserConfig, "plugins"> | null | void => {
     config.optimizeDeps ??= {}; // eslint-disable-line no-param-reassign
-    config.optimizeDeps.esbuildOptions ??= {}; // eslint-disable-line no-param-reassign
-    config.optimizeDeps.esbuildOptions.plugins ??= []; // eslint-disable-line no-param-reassign
+    config.optimizeDeps.rolldownOptions ??= {}; // eslint-disable-line no-param-reassign
+
+    const existingPlugins = config.optimizeDeps.rolldownOptions.plugins;
+    const plugins = Array.isArray(existingPlugins)
+      ? [...existingPlugins]
+      : existingPlugins
+      ? [existingPlugins]
+      : [];
 
     // Prevent the plugin from being inserted multiple times
     const pluginName = "externalize";
-    const isPluginAdded = config.optimizeDeps.esbuildOptions.plugins.some(
-      (plugin: EsbuildPlugin) => plugin.name === pluginName,
+    const isPluginAdded = plugins.some(
+      (plugin) =>
+        typeof plugin === "object" &&
+        plugin !== null &&
+        "name" in plugin &&
+        (plugin as { name?: string }).name === pluginName,
     );
 
     if (!isPluginAdded) {
-      config.optimizeDeps.esbuildOptions.plugins.push(
-        esbuildPluginExternalize(options.externals),
-      );
+      plugins.push(optimizeDepsExternalizePlugin(options.externals));
     }
+
+    // eslint-disable-next-line no-param-reassign
+    config.optimizeDeps.rolldownOptions.plugins = plugins;
     return null;
   },
   configResolved: (resolvedConfig: ResolvedConfig) => {
@@ -157,15 +149,16 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => ({
       modulePrefixTransform({ base: resolvedConfig.base ?? "/" }),
     );
   },
-  // Supresses the following warning:
+  // Suppresses the following warning:
   // Failed to resolve import [dependency] from [sourceFile]. Does the file exist?
   resolveId: (id: string) => {
     if (resolvedExternals.has(id)) {
       return { id, external: true };
     }
 
-    // During subsequent runs after the dependency optimization is completed, esbuild plugin might not be called.
-    // This will cause the resolvedExternals to be empty, and the plugin will not be able to resolve the external modules, which is why a direct check is required.
+    // During subsequent runs after the dependency optimization is completed, the optimizeDeps
+    // plugin might not be called. This will cause the resolvedExternals to be empty, and the
+    // plugin will not be able to resolve the external modules, which is why a direct check is required.
     if (isExternal(id, options.externals)) {
       resolvedExternals.add(id);
       return { id, external: true };
@@ -173,7 +166,7 @@ const vitePluginExternalize = (options: PluginOptions): Plugin => ({
 
     return null;
   },
-  // Supresses the following warning:
+  // Suppresses the following warning:
   // The following dependencies are imported but could not be resolved: [dependency] (imported by [sourceFile])
   load: (id: string) => {
     if (resolvedExternals.has(id)) {
