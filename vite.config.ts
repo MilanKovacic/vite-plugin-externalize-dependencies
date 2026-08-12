@@ -1,12 +1,13 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import externalize from "./src/index";
+import externalize from "./src/index.js";
 
 const disablePlugin = process.env.DISABLE_PLUGIN === "true";
 
 // eslint-disable-next-line import/no-default-export
 export default defineConfig({
+  root: import.meta.dirname,
   plugins: disablePlugin
     ? []
     : [
@@ -16,8 +17,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
-      // eslint-disable-next-line unicorn/prefer-module
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: resolve(import.meta.dirname, "src/index.ts"),
       formats: ["es", "cjs"],
       fileName: "index",
     },
